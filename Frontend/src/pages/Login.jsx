@@ -22,8 +22,10 @@ const Login = () => {
     const endpoint = isLogin ? "login" : "register";
 
     try {
+      const backendUrl = import.meta.env.VITE_BACKEND_URL;
+
       const response = await axios.post(
-        `http://localhost:3000/api/user/${endpoint}`,
+        `${backendUrl}/api/user/${endpoint}`,
         data,
         {
           headers: {

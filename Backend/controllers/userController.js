@@ -31,9 +31,16 @@ const loginUser = async (req, res) => {
 
 const registerUser = async (req, res) => {
   try {
+    console.log("Incoming register request body:", req.body); // ✅ LOG INPUT
+
     const { name, email, password } = req.body;
 
-    // Check if user exists
+    // ✅ Ensure all required fields are present
+    if (!name || !email || !password) {
+      return res.status(400).json({ msg: "All fields are required" });
+    }
+
+    // ✅ Check if user already exists
     const existingUser = await userModel.findOne({ email });
     if (existingUser) {
       return res
@@ -41,22 +48,22 @@ const registerUser = async (req, res) => {
         .json({ msg: "User already exists with this email" });
     }
 
-    // Validate email
+    // ✅ Validate email
     if (!validator.isEmail(email)) {
       return res.status(400).json({ msg: "Please enter a valid email" });
     }
 
-    // Validate password
+    // ✅ Validate password
     if (password.length < 6) {
       return res
         .status(400)
         .json({ msg: "Please enter a strong password (6+ characters)" });
     }
 
-    // Hash password
+    // ✅ Hash password
     const hashedPassword = await hashPassword(password);
 
-    // Create new user
+    // ✅ Save new user
     const newUser = new userModel({
       name,
       email,
@@ -65,10 +72,10 @@ const registerUser = async (req, res) => {
 
     await newUser.save();
 
-    // Generate JWT
+    // ✅ Generate JWT
     const token = generateToken(newUser._id);
 
-    // Respond
+    // ✅ Respond
     res.status(201).json({
       msg: "User registered successfully",
       token,
@@ -79,7 +86,7 @@ const registerUser = async (req, res) => {
       },
     });
   } catch (error) {
-    console.error("Register Error:", error);
+    console.error("Register Error:", error); // ✅ LOG ERROR
     res.status(500).json({ msg: "Server Error" });
   }
 };
